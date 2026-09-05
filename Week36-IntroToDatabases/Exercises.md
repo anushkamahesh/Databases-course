@@ -204,22 +204,25 @@ Answer the following in your own words (write 2–3 sentences per point):
 
 > [!NOTE]
 > ***Your Answer***
->
-> _(Write your answer here.)_
+> Editing Conflicts constantly and a possibility to overwrite each other's changes.
+> Severe slowdowns and Crashes.
+> No real time inventory control.
 
 2. List **3 benefits** of switching to a database system, explaining how each one solves a problem from your list above.
 
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> Data is better organised.
+> A database system can avoid storing the same information multiple times
+> And finally, better data security as the system only allows access to be controlled through users and permissions.
 
 3. Explain the three-schema architecture in your own words. Why is the separation into three levels useful?
 
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> The three-schema architecture has 3 different levels: External (what the users see), conceptual (how the data is organized) and internal (how the data is stored). Separating them makes the database easier to manage because changes in one level do not always affect the others.
 
 ---
 
@@ -235,7 +238,7 @@ _(See Section 1 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> Data is raw facts or values that have not been processed. Information is data that has been organized so it has meaning. For eg, in trailshop 120 euros is data. If we know that 120 euro is the price of hiking backpack, it becomes an information.
 
 **Q2.** List and explain three disadvantages of file-based data management systems. For each, describe how it would affect TrailShop specifically.
 _(See Section 2 of this week's Theory material.)_
@@ -243,7 +246,9 @@ _(See Section 2 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> Data duplication- The same data may be stored in multiple files. For trailshop customer information could be repeated in different files and can cause confusion
+> Data Inconsistency- Different files may contain different versions of the same data. For trailshop a customers address could be updated in one file but remain old in another.
+> Difficulty to access data- Finding and managing data can be difficult when it is spread across multiple files. In trailshop finding all orders from a specific customer can take alot of time.
 
 **Q3.** What is a DBMS? List four of its core functions.
 _(See Sections 3 and 4 of this week's Theory material.)_
@@ -251,7 +256,7 @@ _(See Sections 3 and 4 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> A DBMS Database management system is a software used to create, store, manage and access data in a database. It's four core functions are: Storing data, retrieving data, updating data and managing data security and access.
 
 **Q4.** Explain program-data independence with a concrete example. Why is it important?
 _(See Section 5.2 of this week's Theory material.)_
@@ -259,7 +264,7 @@ _(See Section 5.2 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> Program data independence means that a program does not need to change when the database structure changes. For eg, if trailshop adds new column to the products table, existing programs can still work. It's important because it makes the system easier to maintain.
 
 **Q5.** What is metadata? Give two examples of metadata for a `products` table.
 _(See Section 8 of this week's Theory material.)_
@@ -267,7 +272,7 @@ _(See Section 8 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> Metadata is data that describes other data. Two eg for a products table are, the column name such as the product_name and the data type like the price being a decimal number.
 
 **Q6.** What is the three-schema architecture? Name and briefly describe each level.
 _(See Section 3.3 of this week's Theory material.)_
@@ -275,7 +280,7 @@ _(See Section 3.3 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+>the three-schema architecture divides a database into 3 levels. External level:It's what the users see. Conceptual level: How the data is organized and connected. And finally the Internal Level: How data is physically stored.
 
 **Q7.** Explain the difference between logical data independence and physical data independence.
 _(See Section 3.4 of this week's Theory material.)_
@@ -283,7 +288,7 @@ _(See Section 3.4 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+>Logical data independence means changing the database structure without changing applications. Physical data independence means changing how data is stored without changing the database structure or applications.
 
 **Q8.** What is a transaction? Why is atomicity important? Give a TrailShop example.
 _(See Section 5.5 of this week's Theory material.)_
@@ -291,7 +296,7 @@ _(See Section 5.5 of this week's Theory material.)_
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> A transaction is a group of database operations treated as one unit. Atomicity means that all operations must succeed or none of them happen. For example, when a customer buys a trailshop product the order and payment should both be completed or neither should happen.
 
 ### True/False
 
@@ -306,7 +311,11 @@ For each statement, write **True** or **False** and correct any false statements
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write True/False and corrections for all five statements above.)_
+> 1.False
+> 2.True
+> 3.True
+> 4.False
+> 5.False
 
 ### Matching Exercise
 
@@ -343,16 +352,16 @@ Match each term (1–10) with its definition (A–J).
 >
 > | #   | Your Match |
 > | --- | ---------- |
-> | 1   |            |
-> | 2   |            |
-> | 3   |            |
-> | 4   |            |
-> | 5   |            |
-> | 6   |            |
-> | 7   |            |
-> | 8   |            |
-> | 9   |            |
-> | 10  |            |
+> | 1   |    f        |
+> | 2   |     h       |
+> | 3   |     b     |
+> | 4   |     a       |
+> | 5   |      c      |
+> | 6   |      g      |
+> | 7   |       d     |
+> | 8   |       e     |
+> | 9   |       i     |
+> | 10  |       j     |
 
 ---
 
@@ -378,7 +387,12 @@ Connect to PostgreSQL using psql and complete the following. Write down the comm
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Document the commands you used and summarize the output for each step.)_
+> 1. \l
+> 2. \c trailshop
+> 3. \dt
+> 4. \d table_name, \du
+> 5. \h
+> 6. \q
 
 ### Exercise 3.2: Explore the System Catalog
 
@@ -402,7 +416,7 @@ Why does the last query return no rows? What would you expect to see after creat
 > [!NOTE]
 > ***Your Answer***
 >
-> _(Write your answer here.)_
+> It returns no rows because no tables have been created yet in the public schema of the trailshop database yet. In the future weeks I expect the sanmes of tables I create in the upcoming excrcises and lectures.
 
 ### Exercise 3.3: Create and Drop a Test Database
 
