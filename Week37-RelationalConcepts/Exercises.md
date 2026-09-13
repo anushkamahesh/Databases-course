@@ -19,7 +19,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> The primary key of the products table is product_id. It is a good choice because each product has a unique identifier so product ID helps uniquely identify every row. It is also stable and does not depend on information such as the product's name or price which may change over time.
 >
 >
 >
@@ -31,7 +31,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(The primary keys of the categories table is category_id. It uniquely identifies each category and provides a stable identifier that can be referenced by other tables.)*
 >
 >
 >
@@ -43,7 +43,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(The foreign key in the products table is category_id. It references cetegory(category_id). This ensures that a product can only reference A category that exists in the categories table.)*
 >
 >
 >
@@ -56,7 +56,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(name could be a candidate key if we assume that every product name must be unique and cannot be NULL. However, it would be unsuitable as a primary key if duplicate names are allowed or if product names can change. A primary key should be stable and reliably unique so product_id is a better choice.)*
 >
 >
 >
@@ -66,7 +66,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(An example is product_id, name. This is a superkey because product_id alone already uniquely identifies a product. However it is not a candidate key because name is unnecessary. Since product_id by itself is sufficient the combination is not minimal.)*
 >
 >
 >
@@ -77,7 +77,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(order_id or product_id is a suitable composite key. Neither column alone is sufficient because an order can contain multiple products, so order_id can appear in multiple rows. Likewise, the same product can appear in many different orders, so product_id can also appear in multiple rows. Together, however, order_id and product_id uniquely identify one product within one order.)*
 >
 >
 >
@@ -88,7 +88,7 @@ Using the `products`, `categories`, and `customers` tables shown in Section 2 of
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(email can be a candidate key if every customer has a unique non null email address. It is natural key because it comes from real world customer information. customer_id on the other hand is a surrogate key created specifically for database identification. customer_id is generally better primary key because it is stable even if a customer's email changes.)*
 >
 >
 >
@@ -114,7 +114,12 @@ Think about rules for customers, orders, and categories — not just products.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(List your 5 business rules with constraint types, table/column, and SQL syntax.)*
+> *Business Rule	Constraint Type	Table.Column	SQL Syntax
+Every product must have a price greater than zero.	CHECK	products.price	CHECK (price > 0)
+Every product must have a stock quantity of zero or greater.	CHECK	products.stock_quantity	CHECK (stock_quantity >= 0)
+Every customer must have a unique email address.	UNIQUE + NOT NULL	customers.email	email VARCHAR(255) NOT NULL UNIQUE
+Every order must belong to an existing customer.	FOREIGN KEY	orders.customer_id	FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+Every product must belong to an existing category.	FOREIGN KEY	products.category_id	FOREIGN KEY (category_id) REFERENCES categories(category_id)*
 >
 >
 >
@@ -161,9 +166,14 @@ VALUES (1001, 101, 0, 189.50);
 > [!NOTE]
 > ***Your Answer***
 >
-> *(For each statement A–H, write SUCCESS or FAIL and explain any violation.)*
->
->
+> *(A-Fail-category_id is the primary key of categories, so it cannot contain NULL-Column 'category_id' cannot be null
+> B-Success
+> C-Fail-The price is -5.00, which violates the CHECK constraint requiring the price to be greater than zero-CHECK constraint violated
+> D-FAIL-product_id = 103 already exists in the products table-Duplicate entry '103' for key 'PRIMARY'
+> E-FAIL-Foreign key category_id = 10-does not exist)*
+>F-FAIL-category_id = 10 does not correspond to an existing category. This violates the FOREIGN KEY constraint on products.category_id-update row
+> G-FAIL-stock_quantity = -3 violates the CHECK constraint requiring stock quantity to be zero or greater-CHECK constraint violated
+> H-FAIL-The quantity is 0, which violates the CHECK constraint requiring an order-item quantity to be greater than zero-CHECK constraint violated
 >
 >
 
@@ -181,7 +191,7 @@ Consider the following scenario using the schema from Theory Section 9.8:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(I would recommend ON DELETE RESTRICT for the products.category_id → categories.category_id relationship. A category should normally not be deleted while products still depend on it, because automatically deleting products with CASCADE could cause unintended data loss. RESTRICT forces the administrator to move or delete the products explicitly before removing the category.)*
 >
 >
 >
@@ -203,7 +213,10 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Relation: A table in a database. Example: the products table.
+Tuple: A row in a table. Example: one row describing a specific product.
+Attribute: A column in a table. Example: price in the products table.
+Domain: The allowed values for an attribute. Example: price can be positive numbers.)*
 >
 >
 >
@@ -217,7 +230,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A candidate key is a column or group of columns that can uniquely identify each row. The primary key is the candidate key chosen to be the main key of the table. Yes, a table can have more than one candidate key, but normally only one is selected as the primary key.)*
 >
 >
 >
@@ -231,7 +244,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Entity integrity means that every row must be uniquely identifiable. A primary key cannot be NULL because NULL does not identify a specific value, so every row must have a known and unique primary key.)*
 >
 >
 >
@@ -244,7 +257,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Referential integrity prevents a foreign key from referring to a row that does not exist in the parent table.)*
 >
 >
 >
@@ -257,7 +270,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A surrogate key is an artificial ID created by the database and has no real-world meaning. For a books table, book_id could be a surrogate key.A natural key is a value that already has meaning in the real world. For example, ISBN can be a natural key for a book.)*
 >
 >
 >
@@ -271,7 +284,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(NULL means that a value is missing, unknown, or not provided. We cannot compare NULL using = because NULL is not an ordinary value.)*
 >
 >
 >
@@ -284,7 +297,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A junction table is a table used to connect two tables in a many-to-many (M:N) relationship. For TrailShop, order_items can be a junction table between orders and products. One order can contain many products, and one product can appear in many orders.)*
 >
 >
 >
@@ -297,7 +310,9 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(1:1 (one-to-one): One row in one table is connected to one row in another table. Example: one customer has one customer profile.
+1:N (one-to-many): One row can be connected to many rows. Example: one category can have many products.
+M:N (many-to-many): Many rows can be connected to many rows. Example: many orders can contain many products, using order_items.)*
 >
 >
 >
@@ -311,7 +326,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(ON DELETE CASCADE automatically deletes related child rows when the parent row is deleted. It is useful when the child records should not exist without the parent. ON DELETE RESTRICT prevents the parent row from being deleted if child rows still reference it. It is useful when we want to protect important related data from accidental deletion.)*
 >
 >
 >
@@ -324,7 +339,7 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Atomic entries means that each table cell should contain one single value, not a list of values.)*
 >
 >
 >
@@ -336,12 +351,12 @@ Answer each question in 2–4 sentences unless otherwise specified. Reference th
 
 For each statement, write **True** or **False** and correct any false statements.
 
-1. A superkey is always a candidate key.
-2. A primary key can consist of more than one column.
-3. NULL = NULL evaluates to TRUE in SQL.
-4. A foreign key must always be NOT NULL.
-5. Referential integrity ensures that every FK value matches an existing PK value (or is NULL).
-6. The degree of a relation is the number of rows.
+1. A superkey is always a candidate key. FALSE
+2. A primary key can consist of more than one column. TRUE
+3. NULL = NULL evaluates to TRUE in SQL.FALSE
+4. A foreign key must always be NOT NULL.FALSE
+5. Referential integrity ensures that every FK value matches an existing PK value (or is NULL).TRUE
+6. The degree of a relation is the number of rows.FALSE
 
 ### Matching Exercise
 
@@ -349,18 +364,18 @@ Match each term (1–12) with its definition (A–L).
 
 | # | Term |
 |---|---|
-| 1 | Superkey |
-| 2 | Candidate key |
-| 3 | Composite key |
-| 4 | Foreign key |
-| 5 | Alternate key |
-| 6 | Surrogate key |
-| 7 | Natural key |
-| 8 | Orphan record |
-| 9 | Domain |
-| 10 | Junction table |
-| 11 | Cardinality |
-| 12 | COALESCE |
+| 1 | Superkey |F
+| 2 | Candidate key |G
+| 3 | Composite key |B
+| 4 | Foreign key |H
+| 5 | Alternate key |E
+| 6 | Surrogate key |D
+| 7 | Natural key |J
+| 8 | Orphan record |C
+| 9 | Domain |A
+| 10 | Junction table |K
+| 11 | Cardinality |I
+| 12 | COALESCE |L
 
 | Letter | Definition |
 |---|---|
@@ -383,18 +398,18 @@ Match each term (1–12) with its definition (A–L).
 >
 > | # | Your Match |
 > |---|---|
-> | 1 | |
-> | 2 | |
-> | 3 | |
-> | 4 | |
-> | 5 | |
-> | 6 | |
-> | 7 | |
-> | 8 | |
-> | 9 | |
-> | 10 | |
-> | 11 | |
-> | 12 | |
+> | 1 |F |
+> | 2 | G|
+> | 3 | B|
+> | 4 | H|
+> | 5 | E|
+> | 6 | D|
+> | 7 | J|
+> | 8 | C|
+> | 9 | A|
+> | 10 | K|
+> | 11 | I|
+> | 12 | L|
 >
 
 ---
