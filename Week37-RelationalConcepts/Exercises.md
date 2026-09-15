@@ -436,6 +436,7 @@ CREATE TABLE employees (
 );
 ```
 
+
 Assume these rows already exist:
 
 ```sql
@@ -472,7 +473,14 @@ DELETE FROM departments WHERE dept_id = 1;
 -- 8
 INSERT INTO employees VALUES (106, 'Grace', 0, 2);
 ```
-
+1-Outcome: SUCCESS
+2.Outcome: FAIL, Constraint Violated: CHECK (salary >= 0) (Salary cannot be negative)
+3.Outcome: FAIL, Constraint Violated: PRIMARY KEY on employees(emp_id) (Employee ID 100 already belongs to Alice).
+4.Outcome: FAIL, Constraint Violated: FOREIGN KEY / REFERENCES departments(dept_id) (Department 5 does not exist)
+5.Outcome: FAIL, Constraint Violated: UNIQUE on departments(dept_name) ('Engineering' already exists).
+6.Outcome: FAIL, Constraint Violated: NOT NULL on employees(name) Name cannot be empty
+7.Outcome: FAIL, Constraint Violated: FOREIGN KEY / REFERENCES (You cannot delete department 1 because Alice is still linked to it).
+8.Outcome: SUCCESS
 ### Exercise 3.2: Write the Constraints
 
 Given these business rules for a **bookstore database**, write the `CREATE TABLE` statements with appropriate constraints:
@@ -512,14 +520,75 @@ A small public library needs a database. Here is a description of their requirem
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(1.genres: genre_id, genre_name
+
+books: isbn, title, pub_year, genre_id
+
+book_copies: barcode, isbn
+
+members: member_id, name, email, phone
+
+borrowings: borrowing_id, member_id, barcode, borrow_date, due_date, return_date
+
+2.genres: genre_id — Surrogate (auto-generated number; faster than searching text names).
+
+books: isbn — Natural (a standard 13-digit identifier that already uniquely identifies books globally).
+
+book_copies: barcode — Natural (the physical barcode sticker uniquely identifies each physical copy).
+
+members: member_id — Surrogate (system-assigned account number to avoid issues with matching names).
+
+borrowings: borrowing_id — Surrogate (auto-generated ID for each borrowing transaction)
+
+3-
+4.genres: genre_name (Must be unique so duplicate genres aren't created).
+
+members: email (Must be unique to identify distinct member accounts))*
 >
->
+>5.very book copy has a unique barcode-PRIMARY KEY-Yes
+Every book belongs to one genre-NOT NULL + FOREIGN KEY-Yes
+Due date is 14 days after borrow date-CHECK or DEFAULT calculation-Yes
+Cannot borrow a copy if it's currently unreturned-Complex Logic-No (Needs a custom SQL trigger or application logic to check active rows)
 >
 >
 6. **Write the CREATE TABLE statements** for at least the `books`, `copies`, and `borrowings` tables with full constraints.
 
----
+---CREATE TABLE genres (
+    genre_id   SERIAL PRIMARY KEY,
+    genre_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE books (
+    isbn         CHAR(13) PRIMARY KEY,
+    title        VARCHAR(255) NOT NULL,
+    pub_year     INTEGER CHECK (pub_year >= 1450 AND pub_year <= 2026),
+    genre_id     INTEGER NOT NULL REFERENCES genres(genre_id)
+);
+
+
+CREATE TABLE copies (
+    barcode      VARCHAR(50) PRIMARY KEY,
+    isbn         CHAR(13) NOT NULL REFERENCES books(isbn) ON DELETE CASCADE
+);
+
+
+CREATE TABLE members (
+    member_id    SERIAL PRIMARY KEY,
+    name         VARCHAR(100) NOT NULL,
+    email        VARCHAR(255) NOT NULL UNIQUE,
+    phone        VARCHAR(20)
+);
+
+-- 3. Borrowings Table
+CREATE TABLE borrowings (
+    borrowing_id SERIAL PRIMARY KEY,
+    member_id    INTEGER NOT NULL REFERENCES members(member_id),
+    barcode      VARCHAR(50) NOT NULL REFERENCES copies(barcode),
+    borrow_date  DATE NOT NULL DEFAULT CURRENT_DATE,
+    due_date     DATE NOT NULL DEFAULT (CURRENT_DATE + INTERVAL '14 days'),
+    return_date  DATE,
+    
+);
 
 ## Submission Checklist
 
