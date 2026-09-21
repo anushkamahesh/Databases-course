@@ -59,7 +59,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Creating a concepetual model helps understand the requirements and rules before committing to a technical setup. It is also easier to fix the model before creating the actual database.)*
 >
 >
 >
@@ -70,7 +70,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(The conceptual level shows the main entities and relationships at a high level. The logical level turns these into tables, coloumns and keys.)*
 >
 >
 >
@@ -81,7 +81,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It means changing the database structure without changing the applications or user views. For example, Splitting one table into two while keeping the same view for users.)*
 >
 >
 >
@@ -92,7 +92,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It means changing how data is stored without changing the database structure or SQL queries. For ex, adding an index to make searches faster.)*
 >
 >
 >
@@ -103,7 +103,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A string entity can be identified by itself like building with a building ID. A weak entity depends on another entity like a room that needs a building ID)*
 >
 >
 >
@@ -114,7 +114,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A composite attribute can be divided into smaller parts, like Address street city or postal code. A multivalued attribute can have several values, like a person's phone numbers.)*
 >
 >
 >
@@ -125,7 +125,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A derived attribute is calculated from other data. It is usually not stored because the value can be calculated when needed and storing it can cause errors.)*
 >
 >
 >
@@ -135,7 +135,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A binary relationship connects two type of entity like customer places order. A unary relationship connects the same entity type like employee manages employee.)*
 >
 
 
@@ -145,7 +145,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(In an identifying relationship, the parent's key becomes part of the child's primary key. In a non-identifying relationship, the parent's key is only a foreign key.)*
 >
 
 
@@ -158,7 +158,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A relational database cannot directly handle many records on both sides. We use a junction table to create two 1:N relationships.)*
 >
 >
 >
@@ -169,7 +169,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section. 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(This means each department has at least 1 employee, and each employee belongs to exactly 1 department.)*
 >
 >
 >
