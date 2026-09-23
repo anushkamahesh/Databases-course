@@ -42,7 +42,9 @@ Using the entity descriptions from Theory Section 12, create an ER diagram that 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(https://dbdiagram.io/d/6ab40cbe0f25a52d01ea9fc2
+> Week 37’s design puts `category_id` directly in `Product`, which creates a 1:N relationship and only allows each product to have one category. A `ProductCategory` junction table is needed to support a true many-to-many relationship between products and categories. `OrderItem` is a weak entity because it depends on an order and uses `order_id` + `product_id` as its composite key. `unit_price` is stored in `OrderItem` to keep the original price paid, even if the product’s price changes later.
+)*
 >
 >
 >
@@ -227,7 +229,7 @@ a) Can an author exist without having written any books? Explain using the notat
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Yes. The O< means zero or many books, so an author can exist in the system even if they have not written or been connected to any books yet.)*
 >
 >
 >
@@ -237,7 +239,7 @@ b) Can a book exist without being loaned? Explain using the notation.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Yes. The relationship allows zero loans, so a book can be added to the library even if nobody has borrowed it yet.)*
 >
 >
 >
@@ -249,7 +251,7 @@ c) What type of entity is Loan in this diagram? Is it a junction/associative ent
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Loan is a junction/associative entity. It connects Book and Member and records information about a specific loan, such as dates. It also helps resolve the many-to-many relationship between books and members.)*
 >
 >
 >
@@ -261,7 +263,7 @@ d) What is the cardinality of the Author-Book relationship? Is this realistic? W
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(The diagram shows a 1:N relationship, meaning one author can have many books but each book has only one author. This is not always realistic because books can have multiple authors. A many-to-many relationship with a junction table such as BookAuthors would handle this better.)*
 >
 >
 >
@@ -273,7 +275,7 @@ e) What attributes would you add to the Loan entity?
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Some useful attributes would be loan_date, due_date and return_date. You could also add renewal_count or fine_amount if those are needed by the library.)*
 >
 >
 >
@@ -304,7 +306,7 @@ a) Can a student exist without being enrolled in any course?
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Yes. A student can have zero enrollments, so they can exist in the system without currently being enrolled in a course.)*
 >
 >
 >
@@ -322,25 +324,26 @@ b) Can a course exist without having any enrolled students?
 >
 >
 
-c) What is the cardinality between Student and Course (through Enrollment)?
-
 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> 
+According to the diagram, no. The relationship requires at least one enrollment. However, this could be considered a modelling problem because normally a course should be allowed to exist before students enroll.
+)*
 >
 >
 >
 >
 
 d) Can a teacher exist without teaching any courses?
+The relationship is many-to-many. A student can take multiple courses, and a course can have multiple students. Enrollment is used as the junction entity.
 
 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Yes. The O< shows zero or many courses, so a teacher can exist without currently being assigned to a course.)*
 >
 >
 >
@@ -352,7 +355,7 @@ e) Is the Teacher-Course relationship 1:1 or 1:N? What does this imply about tea
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It is 1:N. One teacher can teach several courses, but each course can only have one teacher. This means the current design does not support team teaching. To support multiple teachers per course, a junction table could be added.)*
 >
 >
 >
@@ -387,7 +390,15 @@ FitZone is a local gym and fitness center. They need a database to manage their 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(1. Entities and attributes
+
+Member: member_id (PK), first_name, last_name, email, phone, date_of_birth, membership_start_date, plan_id (FK)
+MembershipPlan: plan_id (PK), plan_name, monthly_price, description
+Trainer: trainer_id (PK), first_name, last_name, specialization, hire_date
+Class: class_id (PK), class_name, day_of_week, start_time, end_time, max_capacity, trainer_id (FK)
+Registration: member_id (PK, FK), class_id (PK, FK), registration_date
+Equipment: equipment_id (PK), name, type, purchase_date, status
+MaintenanceRequest: request_id (PK), equipment_id (FK), request_date, description, status, resolution_date)*
 >
 >
 >
@@ -398,7 +409,10 @@ FitZone is a local gym and fitness center. They need a database to manage their 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(One MembershipPlan can have many Members, while each member belongs to one plan.
+One Trainer can teach many Classes, while each class has one trainer.
+Member and Class have an M:N relationship through Registration. A member can join many classes and a class can have many members.
+One Equipment item can have many MaintenanceRequests, while each request belongs to one piece of equipment.)*
 >
 >
 >
@@ -409,7 +423,7 @@ FitZone is a local gym and fitness center. They need a database to manage their 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Add a link to your image here)*
+> *(https://dbdiagram.io/d/6ab40df45869425612764805)*
 >
 >
 >
@@ -420,7 +434,7 @@ FitZone is a local gym and fitness center. They need a database to manage their 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Registration is a junction entity because it connects Member and Class and resolves their many-to-many relationship. Its primary key consists of member_id and class_id. MaintenanceRequest depends on equipment, but it is not a weak entity because it has its own primary key, request_id.)*
 >
 >
 >
@@ -431,7 +445,7 @@ FitZone is a local gym and fitness center. They need a database to manage their 
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Yes. Member and Class have a many-to-many relationship. This is handled through the Registration table.)*
 >
 >
 >
@@ -476,8 +490,7 @@ a) State what the error is
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
->
+>  Multivalued attribute, M:N implemented directly, Entity naming and Missing relationship
 >
 >
 >
@@ -487,7 +500,8 @@ b) Explain why it's a problem (reference the relevant theory section)
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A better solution is to create a Genre table and a BookGenres junction table. This allows each book to have multiple genres.
+> )*
 >
 >
 >
@@ -498,7 +512,7 @@ c) Describe how to fix it
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A better solution is to create a Genre table and a BookGenres junction table. This allows each book to have multiple genres.)*
 >
 >
 >
