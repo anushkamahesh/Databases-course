@@ -237,7 +237,7 @@ A hotel booking system has the following entities and relationships:
 > ***Your SQL***
 >
 > ```sql
-> -- Write your CREATE TABLE statements here
+> -- 
 >
 >
 > ```
@@ -245,7 +245,10 @@ A hotel booking system has the following entities and relationships:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Explain why Room is a weak entity and how its PK reflects this.)*
+> *(Room is a weak entity because it cannot be identified on its own. A room number like "101" or "204" is not unique across the system, since almost every hotel has a room 101. A room only means something in the context of the hotel that owns it. Room also depends on Hotel for its existence: if the hotel is removed, its rooms no longer make sense. The Hotel-Room relationship is therefore an identifying relationship.
+> A strong entity like hotels has its own primary key (hotel_id). A weak entity has only a partial key (room_number), which is unique only within one hotel. To get a full identifier, the table combines the owner's primary key with the partial key, giving the composite primary key PRIMARY KEY (hotel_id, room_number). Here hotel_id is both part of the primary key and a foreign key to hotels, and room_number is the partial key. The foreign key uses ON DELETE CASCADE because a room cannot exist without its hotel.
+
+The composite key also affects the tables that reference rooms. booking_rooms needs a composite foreign key (hotel_id, room_number) to identify a single room. That is why it stores both columns.)*
 >
 >
 >
@@ -264,21 +267,21 @@ For each column described below, choose the best PostgreSQL data type and write 
 
 | # | Column Description | Your Data Type | Justification |
 |---|---|---|---|
-| 1 | Employee salary (exact, up to €999,999.99) | | |
-| 2 | Number of items in stock (never negative, max ~50,000) | | |
-| 3 | Whether a user's email is verified | | |
-| 4 | Customer's date of birth | | |
-| 5 | Product description (variable length, could be several paragraphs) | | |
-| 6 | Country code (always exactly 2 letters, like "FI", "US") | | |
-| 7 | IP address of a login attempt | | |
-| 8 | Order total (exact, up to €9,999,999.99) | | |
-| 9 | GPS latitude of a store location | | |
-| 10 | A unique identifier for API tokens that must be globally unique across distributed systems | | |
-| 11 | Duration of a video in seconds (always a whole number) | | |
+| 1 | Employee salary (exact, up to €999,999.99) |NUMERIC(8,2) |Money must be exact; 8 digits total with 2 decimals covers up to 999,999.99. Floating-point types would introduce rounding errors. |
+| 2 | Number of items in stock (never negative, max ~50,000) |INTEGER with CHECK (stock >= 0) | A whole number that fits easily in INTEGER (SMALLINT max is 32,767, too small). The CHECK enforces "never negative".|
+| 3 | Whether a user's email is verified |BOOLEAN |A true/false flag; it is the most compact and clear type, usually with DEFAULT false. |
+| 4 | Customer's date of birth |DATE | Only the calendar date is needed, not the time. DATE supports date arithmetic (e.g. calculating age).|
+| 5 | Product description (variable length, could be several paragraphs) | TEXT| 	Unbounded variable-length text.|
+| 6 | Country code (always exactly 2 letters, like "FI", "US") |CHAR(2) |Fixed length of exactly 2 characters |
+| 7 | IP address of a login attempt |INET | 	Native network address type that validates IPv4/IPv6 format and supports network operators and subnet queries.|
+| 8 | Order total (exact, up to €9,999,999.99) |NUMERIC(9,2) | Exact decimal for money; 9 digits with 2 decimals covers up to 9,999,999.99.|
+| 9 | GPS latitude of a store location | NUMERIC(9,6)| |
+| 10 | A unique identifier for API tokens that must be globally unique across distributed systems | |UUID |128-bit identifier designed to be globally unique without central coordination; stored compactly (16 bytes) and generated with gen_random_uuid()
+| 11 | Duration of a video in seconds (always a whole number) | INTEGER|Whole-number seconds fit comfortably (max about 2.1 billion seconds = 68 years). Could add CHECK (duration_seconds >= 0). |
 | 12 | Timestamp of when a record was last modified (users in multiple time zones) | | |
-| 13 | A Finnish phone number like "+358 40 123 4567" | | |
-| 14 | A percentage discount (0.00% to 100.00%) | | |
-| 15 | A product's color options (e.g., a product comes in "red", "blue", "green") | | |
+| 13 | A Finnish phone number like "+358 40 123 4567" |VARCHAR(20) | Phone numbers are identifiers, not numbers to calculate with. |
+| 14 | A percentage discount (0.00% to 100.00%) |NUMERIC(5,2) with CHECK (discount BETWEEN 0 AND 100) | 5 digits with 2 decimals covers 0.00 to 100.00 exactly; the CHECK restricts the range.|
+| 15 | A product's color options (e.g., a product comes in "red", "blue", "green") |Separate product_colors table (or TEXT[] array / ENUM for a simple case) |A product can have several colors, so storing them in one column would violate first normal form. |
 
 ---
 
@@ -303,6 +306,29 @@ For each business rule below, write the appropriate PostgreSQL constraint. Provi
 >
 > ```sql
 > -- Write constraints 1–5 here
+> -- 1. 
+weight_kg NUMERIC(6,2) CHECK (weight_kg > 0)
+-- or as ALTER TABLE:
+ALTER TABLE products ADD CONSTRAINT ck_products_weight CHECK (weight_kg > 0);
+
+-- 2.
+email VARCHAR(255) NOT NULL
+-- or:
+ALTER TABLE customers ALTER COLUMN email SET NOT NULL;
+
+-- 3. 
+name VARCHAR(200) UNIQUE
+-- or:
+ALTER TABLE products ADD CONSTRAINT uq_products_name UNIQUE (name);
+
+-- 4. 
+hire_date DATE NOT NULL DEFAULT CURRENT_DATE
+-- or:
+ALTER TABLE employees ALTER COLUMN hire_date SET DEFAULT CURRENT_DATE;
+
+-- 5. 
+status VARCHAR(20) NOT NULL
+    CHECK (status IN ('new', 'confirmed', 'shipped', 'delivered', 'returned'))
 >
 >
 > ```
@@ -320,6 +346,21 @@ For each business rule below, write the appropriate PostgreSQL constraint. Provi
 >
 > ```sql
 > -- Write constraints 6–8 here
+> -- 6. 
+CONSTRAINT ck_flights_times CHECK (arrival_time > departure_time)
+-- or:
+ALTER TABLE flights ADD CONSTRAINT ck_flights_times
+    CHECK (arrival_time > departure_time);
+
+-- 7.
+CONSTRAINT uq_enrollments_student_course UNIQUE (student_id, course_id)
+-- (or make it the composite primary key: PRIMARY KEY (student_id, course_id))
+-- or:
+ALTER TABLE enrollments ADD CONSTRAINT uq_enrollments_student_course
+    UNIQUE (student_id, course_id);
+
+-- 8. 
+discount_percent NUMERIC(5,2) CHECK (discount_percent BETWEEN 0 AND 100)
 >
 >
 > ```
@@ -339,7 +380,26 @@ For each business rule below, write the appropriate PostgreSQL constraint. Provi
 >
 > ```sql
 > -- Write constraints 9–12 here
->
+>-- 9. 
+--    (department_id must be nullable)
+ALTER TABLE employees ADD CONSTRAINT fk_employees_department
+    FOREIGN KEY (department_id) REFERENCES departments (department_id)
+    ON DELETE SET NULL;
+
+-- 10. 
+ALTER TABLE orders ADD CONSTRAINT fk_orders_customer
+    FOREIGN KEY (customer_id) REFERENCES customers (customer_id)
+    ON DELETE RESTRICT;
+
+-- 11. 
+ALTER TABLE blog_posts ADD CONSTRAINT fk_blog_posts_author
+    FOREIGN KEY (author_id) REFERENCES authors (author_id)
+    ON DELETE CASCADE;
+
+-- 12. 
+ALTER TABLE enrollments ADD CONSTRAINT fk_enrollments_course
+    FOREIGN KEY (course_id) REFERENCES courses (course_id)
+    ON DELETE CASCADE;
 >
 > ```
 
