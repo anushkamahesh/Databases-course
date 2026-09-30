@@ -79,7 +79,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(The seven phases are: (1) requirements analysis, (2) conceptual design (ER modelling), (3) logical design, (4) physical design, (5) implementation, (6) testing and evaluation, and (7) deployment and maintenance. This week's focus is logical design, where the ER diagram is converted into a relational schema (tables, columns, keys and constraints) independent of a specific storage implementation.)*
 >
 >
 >
@@ -90,7 +90,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(To map a 1:N relationship, take the primary key of the "one" side and add it as a foreign key column in the table on the "many" side. The FK goes on the "many" side because each row there relates to at most one row on the "one" side, so a single column can hold that reference. Putting it on the "one" side would require storing multiple values in one column, violating first normal form.)*
 >
 >
 >
@@ -101,7 +101,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A junction table (also called a bridge or associative table) implements an M:N relationship by holding foreign keys to both related tables, usually as a composite primary key, plus any attributes of the relationship. It is needed because relational tables cannot directly represent M:N relationships. Example: in a university, students and courses are M:N, so an enrollments table has (student_id, course_id, enrolled_on, grade).)*
 >
 >
 >
@@ -112,7 +112,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(Place the foreign key in the table that has total (mandatory) participation or that is the dependent side, so the FK can be NOT NULL and you avoid many NULLs. Add a UNIQUE constraint on the FK to enforce the 1:1 cardinality. If both sides are mandatory and always accessed together, the two tables may be merged into one.)*
 >
 >
 >
@@ -123,7 +123,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A weak entity has no key of its own, so it is mapped to a table that includes the primary key of its owner (strong) entity as a foreign key. Its primary key is a composite of the owner's PK and the weak entity's partial key. The FK to the owner is typically ON DELETE CASCADE, because the weak entity cannot exist without its owner.)*
 >
 >
 >
@@ -134,7 +134,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(REAL and DOUBLE PRECISION are approximate binary floating-point types, so many decimal values (like 0.1) cannot be stored exactly and rounding errors accumulate, for example 0.1 + 0.2 is not exactly 0.3. For money you should use NUMERIC(p,s) (or DECIMAL), which stores exact decimal values, such as NUMERIC(10,2).)*
 >
 >
 >
@@ -144,7 +144,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(TIMESTAMP (without time zone) stores a date and time exactly as given, with no zone information. TIMESTAMPTZ converts input to UTC for storage and converts to the session time zone on output, so it represents an unambiguous moment in time. You should prefer TIMESTAMPTZ for almost all event times, since it handles users in different time zones and daylight saving changes correctly.)*
 >
 
 
@@ -154,7 +154,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(CASCADE automatically deletes (or updates) the child rows when the parent row is deleted (or its key changed). RESTRICT blocks the deletion of the parent while child rows still reference it. CASCADE is appropriate for order_items when an order is deleted, because the items belong to the order. RESTRICT is appropriate for orders.customer_id, because you do not want to lose order history by deleting a customer.)*
 >
 
 
@@ -164,7 +164,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(An insertion anomaly occurs when you cannot add certain data without also adding unrelated data, because too much is stored in one table. For example, in a single orders table holding customer and product details, you cannot add a new product until someone orders it. Proper design (normalisation) separates entities into their own tables (products, customers, orders) linked by foreign keys, so each fact is stored once and can be inserted independently.)*
 >
 
 
@@ -174,7 +174,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(A natural key is an existing real-world attribute that identifies a row (e.g. email, ISBN, passport number), while a surrogate key is an artificial identifier generated by the database with no business meaning (e.g. an identity integer). A natural key's advantage is that it is meaningful and can enforce real-world uniqueness without an extra column. A surrogate key's advantage is that it is stable (never changes), compact, and fast for joins and foreign keys.)*
 >
 
 
@@ -185,7 +185,7 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(PostgreSQL folds unquoted identifiers to lowercase (following the SQL standard's case-insensitivity for identifiers, with PostgreSQL choosing lowercase), so CustomerName and customername refer to the same column. If you create a name with double quotes and mixed case, you must quote it every time. Using snake_case (e.g. customer_name) avoids this problem, since it is already lowercase, stays readable, and never needs quoting.)*
 >
 >
 >
@@ -195,9 +195,8 @@ Answer each question in 2–4 sentences. Reference the relevant theory section.
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(ON DELETE SET NULL sets the foreign key column of the child rows to NULL when the parent is deleted, keeping the child rows but removing the link. It requires the FK column to be nullable. Use it instead of CASCADE when the child rows have value on their own, e.g. when a department is deleted, employees should remain in the database and just become unassigned.)*
 >
-
 
 
 
