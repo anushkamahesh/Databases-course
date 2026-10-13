@@ -15,7 +15,10 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT p.name, p.price, p.stock
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+WHERE c.name = 'Footwear';
 >
 >
 > ```
@@ -25,8 +28,11 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
->
+> 
+>SELECT name, price
+FROM products
+WHERE price BETWEEN 50 AND 150
+ORDER BY price ASC;
 >
 > ```
 
@@ -35,7 +41,9 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT *
+FROM customers
+WHERE last_name LIKE 'M%' OR last_name LIKE 'K%';
 >
 >
 > ```
@@ -45,8 +53,10 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
->
+> SELECT *
+FROM orders
+WHERE status IN ('pending', 'shipped')
+ORDER BY order_date DESC;
 >
 > ```
 
@@ -55,7 +65,9 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT *
+FROM products
+WHERE LOWER(name) LIKE '%pro%';
 >
 >
 > ```
@@ -68,7 +80,8 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT COUNT(*) AS total_products
+FROM products;
 >
 >
 > ```
@@ -78,7 +91,8 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT ROUND(AVG(price), 2) AS avg_price
+FROM products;
 >
 >
 > ```
@@ -88,7 +102,13 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT name, price, 'most expensive' AS label
+FROM products
+WHERE price = (SELECT MAX(price) FROM products)
+UNION ALL
+SELECT name, price, 'cheapest' AS label
+FROM products
+WHERE price = (SELECT MIN(price) FROM products);
 >
 >
 > ```
@@ -98,7 +118,12 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.first_name || ' ' || c.last_name AS customer,
+       COUNT(o.order_id) AS order_count
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+ORDER BY order_count DESC;
 >
 >
 > ```
@@ -109,7 +134,11 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT o.status,
+       SUM(oi.quantity * oi.unit_price) AS total_revenue
+FROM orders o
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.status;
 >
 >
 > ```
@@ -121,7 +150,10 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT p.name AS product, c.name AS category
+FROM products p
+JOIN categories c ON p.category_id = c.category_id
+ORDER BY c.name, p.name;
 >
 >
 > ```
@@ -131,7 +163,12 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT o.order_id,
+       c.first_name || ' ' || c.last_name AS customer,
+       o.order_date,
+       o.status
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id;
 >
 >
 > ```
@@ -141,7 +178,13 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT p.name,
+       oi.quantity,
+       oi.unit_price,
+       oi.quantity * oi.unit_price AS line_total
+FROM order_items oi
+JOIN products p ON oi.product_id = p.product_id
+WHERE oi.order_id = 1;
 >
 >
 > ```
@@ -151,7 +194,10 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.customer_id, c.first_name, c.last_name
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL;
 >
 >
 > ```
@@ -161,7 +207,14 @@ Use the TrailShop database you created in Week 40. Write SQL queries to answer e
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.name AS category,
+       COUNT(p.product_id) AS num_products,
+       ROUND(AVG(p.price), 2) AS avg_price,
+       SUM(p.price * p.stock) AS inventory_value
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+GROUP BY c.category_id, c.name
+HAVING SUM(p.price * p.stock) > 500;
 >
 >
 > ```
@@ -177,7 +230,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(SQL doesn’t run in the order you write it. It runs FROM (and JOINs), then WHERE, GROUP BY, HAVING, SELECT, DISTINCT, ORDER BY, and finally LIMIT/OFFSET. It matters because it explains things that otherwise look like bugs. For example, you can’t use a SELECT alias in WHERE, because WHERE runs before SELECT even exists.)*
 >
 >
 >
@@ -190,7 +243,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(WHERE filters individual rows before they get grouped. HAVING filters groups after the aggregation. I’d use WHERE for something like WHERE price > 50, and HAVING for something like HAVING COUNT(*) > 1 to keep only customers with more than one order. An aggregate like COUNT can’t go in WHERE, because the groups don’t exist yet at that stage.)*
 >
 >
 >
@@ -201,7 +254,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(COUNT(*) counts all rows, NULLs included. COUNT(column) counts only the rows where that column isn’t NULL. COUNT(DISTINCT column) counts the unique non-NULL values, so a customer who ordered 5 times is counted once.)*
 >
 >
 >
@@ -212,7 +265,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(INNER JOIN returns only rows that have a match in both tables. LEFT JOIN keeps every row from the left table and fills the right side with NULLs when there’s no match. I’d use INNER JOIN when I only care about matching data, like orders with their items. I’d use LEFT JOIN when I need the unmatched rows too, like customers who never ordered.)*
 >
 >
 >
@@ -225,7 +278,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It pulls columns you don’t need, which wastes bandwidth and memory and can stop the database from using covering indexes. It also breaks easily: if someone adds, removes or reorders a column, the code reading the result can break or leak data it shouldn’t. Naming the columns makes the query clearer and safer.)*
 >
 >
 >
@@ -238,7 +291,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It removes duplicate rows from the result. It works on the entire row, meaning the whole combination of selected columns, not on one column. SELECT DISTINCT a, b gives you the unique (a, b) pairs.)*
 >
 >
 >
@@ -253,7 +306,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(No, not in standard SQL. WHERE runs before SELECT, so the alias hasn’t been created yet. You have to repeat the expression in WHERE or wrap the query in a subquery/CTE. ORDER BY runs after SELECT, so aliases do work there.)*
 >
 >
 >
@@ -263,7 +316,7 @@ Answer in your own words:
 > [!NOTE]
 > ***Your Answer***
 >
-> *(Write your answer here.)*
+> *(It’s a problem because the database doesn’t know which value to show for a group that contains several different values. PostgreSQL and most others throw an error. Older MySQL (and SQLite) will quietly pick an arbitrary value from the group, which gives misleading results. The fix is to add the column to GROUP BY or wrap it in an aggregate.)*
 >
 >
 >
@@ -283,7 +336,9 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT name, price
+FROM products
+WHERE stock < 15;
 >
 >
 > ```
@@ -295,7 +350,9 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT first_name, last_name, created_at
+FROM customers
+WHERE created_at >= '2026-01-01' AND created_at < '2027-01-01';
 >
 >
 > ```
@@ -307,7 +364,9 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT *
+FROM products
+WHERE description IS NULL;
 >
 >
 > ```
@@ -321,7 +380,12 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT *
+FROM products
+WHERE category_id IN (1, 2)
+  AND price > 100
+  AND stock > 0
+ORDER BY price DESC;
 >
 >
 > ```
@@ -333,7 +397,9 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT order_id, customer_id, status
+FROM orders
+WHERE status = 'delivered' OR customer_id = 1;
 >
 >
 > ```
@@ -347,7 +413,12 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT category_id,
+       MIN(price) AS min_price,
+       MAX(price) AS max_price,
+       ROUND(AVG(price), 2) AS avg_price
+FROM products
+GROUP BY category_id; 
 >
 >
 > ```
@@ -359,7 +430,8 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT COUNT(DISTINCT customer_id) AS customers_with_orders
+FROM orders;
 >
 >
 > ```
@@ -371,7 +443,8 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT SUM(quantity) AS total_items_sold
+FROM order_items;
 >
 >
 > ```
@@ -385,7 +458,9 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT p.name AS product_name, c.name AS category_name
+FROM products p
+LEFT JOIN categories c ON p.category_id = c.category_id;
 >
 >
 > ```
@@ -397,7 +472,16 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT o.order_id,
+       c.first_name || ' ' || c.last_name AS customer,
+       o.order_date,
+       SUM(oi.quantity) AS num_items,
+       SUM(oi.quantity * oi.unit_price) AS order_total
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+JOIN order_items oi ON o.order_id = oi.order_id
+GROUP BY o.order_id, c.first_name, c.last_name, o.order_date
+ORDER BY o.order_id;
 >
 >
 > ```
@@ -409,7 +493,10 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT p.product_id, p.name
+FROM products p
+LEFT JOIN order_items oi ON p.product_id = oi.product_id
+WHERE oi.order_item_id IS NULL;
 >
 >
 > ```
@@ -423,7 +510,11 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.name AS category, ROUND(AVG(p.price), 2) AS avg_price
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+GROUP BY c.category_id, c.name
+HAVING AVG(p.price) > 100;
 >
 >
 > ```
@@ -435,7 +526,12 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.first_name || ' ' || c.last_name AS customer,
+       COUNT(o.order_id) AS order_count
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.first_name, c.last_name
+HAVING COUNT(o.order_id) > 1;
 >
 >
 > ```
@@ -449,7 +545,10 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+>SELECT *
+FROM products
+ORDER BY product_id
+LIMIT 3 OFFSET 3;
 >
 >
 > ```
@@ -463,7 +562,15 @@ Write the SQL for each task. Use the TrailShop schema (categories, customers, pr
 > ***Your SQL***
 >
 > ```sql
-> -- Write your query here
+> SELECT c.name AS category,
+       SUM(oi.quantity) AS units_sold,
+       SUM(oi.quantity * oi.unit_price) AS total_revenue,
+       COUNT(DISTINCT p.product_id) AS distinct_products_sold
+FROM categories c
+JOIN products p ON c.category_id = p.category_id
+JOIN order_items oi ON p.product_id = oi.product_id
+GROUP BY c.category_id, c.name
+ORDER BY total_revenue DESC;
 >
 >
 > ```
@@ -488,7 +595,7 @@ ORDER BY num_products DESC;
 > [!NOTE]
 > ***Error(s) Identified***
 >
-> *(Describe what is wrong.)*
+> *(This counts how many products each category has and lists them with the biggest category first. Because it’s a LEFT JOIN, categories with no products still appear with a count of 0. It counts p.product_id instead of *, which is what makes the empty ones show 0 and not 1. The result has two columns, category name and num_products, one row per category.)*
 >
 >
 >
@@ -515,8 +622,8 @@ WHERE customer_id NOT IN (
 
 > [!NOTE]
 > ***Error(s) Identified***
->
-> *(Describe what is wrong.)*
+>No error with the current data, but NOT IN returns zero rows if the subquery ever contains a NULL. It’s safer to use NOT EXISTS.
+> *(This returns the first and last names of customers who have never placed an order. The subquery collects every customer_id found in orders, and the outer query keeps the customers who aren’t in that list. The result is just a list of names.)*
 >
 >
 >
@@ -525,7 +632,11 @@ WHERE customer_id NOT IN (
 > ***Corrected SQL***
 >
 > ```sql
-> -- Write the corrected statement here
+> SELECT first_name, last_name
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id
+);
 >
 >
 > ```
@@ -545,7 +656,7 @@ LIMIT 3;
 > [!NOTE]
 > ***Error(s) Identified***
 >
-> *(Describe what is wrong.)*
+> *(This finds the 3 products with the highest stock value (price × stock), ignoring anything that’s out of stock. It shows name, price, stock and the calculated inventory_value, highest first. The result is 3 rows.)*
 >
 >
 >
@@ -575,8 +686,8 @@ ORDER BY order_total DESC;
 
 > [!NOTE]
 > ***Error(s) Identified***
->
-> *(Describe what is wrong.)*
+>None. One small thing is that <> 'cancelled' would also drop orders where status is NULL, but that only matters if NULL statuses exist.
+> *(This lists orders worth more than €200. It leaves out cancelled orders, adds up quantity × unit_price for each order’s items, and keeps only orders whose total is above 200, largest first. The result has order_id and order_total, one row per order.)*
 >
 >
 >
@@ -607,8 +718,8 @@ ORDER BY total_spent DESC NULLS LAST;
 
 > [!NOTE]
 > ***Error(s) Identified***
->
-> *(Describe what is wrong.)*
+>NULLS LAST isn’t supported in MySQL or SQLite older than 3.30, but it works in PostgreSQL and modern SQLite.
+> *(This is a summary per customer: full name, number of distinct orders, total items bought and total money spent (rounded to 2 decimals). Both joins are LEFT JOINs, so customers who never ordered still show up, with 0 orders and NULL for items and spend. The biggest spenders come first and the NULL ones are pushed to the bottom. COUNT(DISTINCT o.order_id) is needed so an order with several line items isn’t counted more than once.)*
 >
 >
 >
