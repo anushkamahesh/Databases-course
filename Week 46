@@ -1,0 +1,231 @@
+Week 46 — Transactions and Concurrency: Exercises
+Important
+
+How to Complete These Exercises Write your answers directly in the highlighted Your Answer / Your SQL fields below each task. Replace the placeholder text with your own work before submitting.
+
+1. TrailShop Project Task
+Task 1.1: Write an Order Transaction
+Write a complete transaction that processes a new order in TrailShop:
+
+Insert a new order for an existing customer.
+Insert 2–3 order items.
+Decrease stock_quantity for each ordered product.
+Include a check that stock doesn't go negative (if it would, ROLLBACK).
+Use a SAVEPOINT before the stock update step.
+[!NOTE] Your SQL
+
+BEGIN;
+
+INSERT INTO orders (customer_id, order_date) VALUES (1, NOW());
+
+INSERT INTO order_items (order_id, product_id, quantity, unit_price)
+VALUES (currval(pg_get_serial_sequence('orders','order_id')), 101, 2, 89.99),
+       (currval(pg_get_serial_sequence('orders','order_id')), 102, 1, 49.99);
+
+SAVEPOINT before_stock;
+
+UPDATE products SET stock_quantity = stock_quantity - 2 WHERE product_id = 101;
+UPDATE products SET stock_quantity = stock_quantity - 1 WHERE product_id = 102;
+
+SELECT product_id FROM products WHERE stock_quantity < 0;
+
+Test the transaction by:
+
+Running it successfully with sufficient stock.
+Running it where stock is insufficient — verify the ROLLBACK works.
+Task 1.2: Observe READ COMMITTED Behavior (Optional)
+Tip
+
+Recommended practice. Do Tasks 1.2–1.4. They are not required to finish the TrailShop project. They prepare you for the exams.
+
+Open two psql sessions (or two query windows). Demonstrate a non-repeatable read:
+
+Session A: BEGIN; then SELECT stock_quantity FROM products WHERE product_id = 101;
+Session B: BEGIN; then UPDATE products SET stock_quantity = stock_quantity - 5 WHERE product_id = 101; then COMMIT;
+Session A: SELECT stock_quantity FROM products WHERE product_id = 101; (observe different value)
+Session A: COMMIT;
+Document what you observe and explain why it happens at READ COMMITTED.
+
+Task 1.3: Observe Locking (Optional)
+Open two sessions and demonstrate row-level locking:
+
+Session A: BEGIN; then SELECT * FROM products WHERE product_id = 101 FOR UPDATE;
+Session B: Try UPDATE products SET price = 99.99 WHERE product_id = 101; — observe it waits.
+Session A: COMMIT; — observe Session B proceeds.
+Document the behavior.
+
+Task 1.4: Experiment with Isolation Levels (Optional)
+Repeat Task 1.2, but set Session A to REPEATABLE READ. Does the non-repeatable read still occur?
+Note
+
+Your Answer
+
+(Write your answer here.)
+
+In a REPEATABLE READ transaction, try to UPDATE a row that another transaction has already committed a change to. What error do you get?
+Note
+
+Your Answer
+
+(Write your answer here.)
+
+Document the differences between READ COMMITTED and REPEATABLE READ behavior.
+2. Theory Review Questions
+Answer in your own words (2–4 sentences each):
+
+What is a transaction, and why is it important for data integrity?
+Note
+
+Your Answer
+
+(A transaction is a group of SQL steps that run as one unit: all succeed or none do. It keeps data consistent, with no half-finished changes.)
+
+Explain the Atomicity property using a real-world example (not from the lecture notes).
+Note
+
+Your Answer
+
+(Atomicity: in a bank transfer, taking €100 from A and adding €100 to B must both happen. If the second step fails, the first is undone.)
+
+What does Isolation guarantee? Why is it needed in a multi-user system?
+Note
+
+Your Answer
+
+(Isolation means concurrent transactions don’t see each other’s unfinished work, as if they ran one after another. Without it, users would read and overwrite each other’s half-done changes.)
+
+What is the difference between COMMIT and ROLLBACK?
+Note
+
+Your Answer
+
+(COMMIT makes the changes permanent. ROLLBACK cancels them all.)
+
+Explain what a SAVEPOINT is and give a scenario where it's useful.
+Note
+
+Your Answer
+
+(A SAVEPOINT is a marker inside a transaction that you can roll back to without losing earlier work. It is useful when step 3 of 5 fails: undo only that step and continue.)
+
+What is a dirty read? Why does PostgreSQL never allow it?
+Note
+
+Your Answer
+
+(A dirty read is reading another transaction’s uncommitted data, which might later be rolled back. PostgreSQL never allows it because it only shows committed row versions.)
+
+Describe the lost update problem. How can SELECT FOR UPDATE prevent it?
+Note
+
+Your Answer
+
+(Lost update: two transactions read the same value and both write, so one overwrite is lost. SELECT FOR UPDATE locks the row, so the second transaction waits and then reads the updated value.)
+
+What is the default isolation level in PostgreSQL? What concurrency problems does it still allow?
+Note
+
+Your Answer
+
+(The default is READ COMMITTED. It still allows non-repeatable reads and phantom reads, and lost updates unless you lock.)
+
+Explain MVCC in one paragraph: what is it, and what advantage does it provide?
+Note
+
+Your Answer
+
+(MVCC (Multi-Version Concurrency Control) means PostgreSQL keeps multiple versions of each row, and each transaction sees the version from its snapshot. Readers don’t block writers and writers don’t block readers, which gives much better concurrency.)
+
+What is a deadlock, and how does PostgreSQL handle it when one is detected?
+Note
+
+Your Answer
+
+(A deadlock is two transactions each waiting for a lock the other holds. PostgreSQL detects it (after deadlock_timeout, 1 second by default) and aborts one transaction with an error, so the other can continue.)
+
+3. Scenario Analysis (Optional)
+Tip
+
+Recommended practice. Do this section. It is not required to finish the TrailShop project. It prepares you for the exams.
+
+For each scenario, identify: (a) which concurrency problem occurs, and (b) at which isolation level(s) it can happen.
+
+Scenario A
+Transaction 1 reads customer 5's order count (3 orders). Transaction 2 inserts a new order for customer 5 and commits. Transaction 1 reads customer 5's order count again and gets 4.
+
+Scenario B
+Transaction 1 reads product 101's price (€89.99). Transaction 2 updates product 101's price to €79.99 but then rolls back. If Transaction 1 had somehow seen €79.99, what problem would that be?
+
+Scenario C
+Two warehouse workers simultaneously check stock for product 101 (both see 10). Worker A ships 3 units and sets stock to 7. Worker B ships 4 units and sets stock to 6. The correct stock should be 3.
+
+4. Transaction Writing (Optional)
+Tip
+
+Recommended practice. Do this section. It is not required to finish the TrailShop project. It prepares you for the exams.
+
+Write complete SQL transactions for the following TrailShop scenarios. Include BEGIN, appropriate operations, error handling (SAVEPOINT where useful), and COMMIT.
+
+Transaction 1: Bulk Price Update
+Update the price of all products in the "Footwear" category by +10%. If any product's new price would exceed €200, rollback the entire update.
+
+BEGIN;
+UPDATE products SET price = price * 1.10 WHERE category = 'Footwear';
+SELECT product_id, price FROM products WHERE category = 'Footwear' AND price > 200;
+
+Transaction 2: Customer Account Deletion
+Delete a customer and all their associated data:
+
+Delete their order_items (for all their orders)
+Note
+
+Your Answer
+
+(BEGIN;
+SAVEPOINT sp_items;
+DELETE FROM order_items WHERE order_id IN (SELECT order_id FROM orders WHERE customer_id = 5);
+SAVEPOINT sp_orders;
+DELETE FROM orders WHERE customer_id = 5;
+SAVEPOINT sp_customer;
+DELETE FROM customers WHERE customer_id = 5;
+
+
+Delete their orders
+Note
+
+Your Answer
+
+(Write your answer here.)
+
+Delete the customer record
+Note
+
+Your Answer
+
+(Write your answer here.)
+
+Use SAVEPOINTs between each step in case of errors.
+
+Transaction 3: Inventory Restock
+Restock 3 products (add specific quantities to stock). Use SELECT FOR UPDATE to lock the rows first, preventing lost updates. Include a check that the new stock doesn't exceed a maximum (e.g., 200).
+BEGIN;
+SELECT product_id, stock_quantity FROM products
+WHERE product_id IN (101, 102, 103) FOR UPDATE;
+
+UPDATE products SET stock_quantity = stock_quantity + 50 WHERE product_id = 101;
+UPDATE products SET stock_quantity = stock_quantity + 30 WHERE product_id = 102;
+UPDATE products SET stock_quantity = stock_quantity + 40 WHERE product_id = 103;
+
+SELECT product_id FROM products WHERE stock_quantity > 200;
+-- If any rows returned: ROLLBACK;  otherwise: COMMIT;
+5. True/False
+For each statement, write TRUE or FALSE and briefly explain why.
+
+In PostgreSQL, a single SQL statement outside of an explicit BEGIN/COMMIT is not a transaction.FALSE, Every single statement is automatically its own transaction (autocommit).
+ROLLBACK undoes all changes made since the last SAVEPOINT.FALSE. Plain ROLLBACK undoes the whole transaction. Only ROLLBACK TO SAVEPOINT goes back to the savepoint.
+At READ COMMITTED isolation level, a transaction can never see another transaction's uncommitted changes.TRUE. Dirty reads are never allowed in PostgreSQL.
+REPEATABLE READ in PostgreSQL prevents phantom reads.TRUE. PostgreSQL’s REPEATABLE READ uses a snapshot, so phantoms can’t appear.
+SELECT FOR UPDATE blocks other SELECT statements on the same rows.FALSE. Normal SELECTs are not blocked (MVCC). Only other FOR UPDATE, UPDATE and DELETE statements wait.
+If a deadlock occurs, PostgreSQL will wait indefinitely for it to resolve.FALSE. PostgreSQL detects the deadlock and aborts one of the transactions.
+MVCC means PostgreSQL keeps multiple versions of each row, allowing readers and writers to work concurrently without blocking.TRUE.
+Once a transaction is committed, its changes can be undone with ROLLBACK.FALSE. After COMMIT, changes are permanent. ROLLBACK can’t undo them.
