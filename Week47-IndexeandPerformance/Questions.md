@@ -29,11 +29,11 @@ WHERE oi.order_id = 42;
 Record your results in a table like this:
 
 Query	Scan Type	Exec Time (ms)	Rows Removed by Filter
-A			
-B			
-C			
-D			
-E			
+A		Seq Scan - 2,106 - 12
+B		Seq Scan - 0,440 - 0
+C		Seq Scan - 1,732 - 6
+D		Seq Scan - n/a - n/a
+E		Nested Loop - 0,075 - 0
 Step 2 — Create Indexes
 Now create the following indexes:
 
@@ -55,11 +55,11 @@ SET enable_seqscan = ON;
 Run the same five queries with EXPLAIN ANALYZE again. Fill in your comparison table:
 
 Query	Before Scan	Before Time (ms)	After Scan	After Time (ms)	Improvement Factor
-A					
-B					
-C					
-D					
-E					
+A		Seq Scan - 2,106 - 0,039 - 54x			
+B		Bitmap Heap - 0,440 - 	0,034 - 12,9x
+C		Seq Scan - 1,732 - 0,032 - 54x			
+D			n/a n/a 		
+E				Hash join - 0,075 - 0,069 - 1,1x	
 Step 4 — Recommendation
 Write a paragraph (4–6 sentences) recommending which indexes to keep in production and why. Consider table size, query frequency, and write overhead. If any index showed minimal improvement, explain why you might drop it.
 
